@@ -34,41 +34,6 @@ def add_bg_from_local(image_file):
          unsafe_allow_html=True
      )
 
-# --- Call Background Image Function ---
-add_bg_from_local('StockCake-Beach Yoga Sunset_1745862986.jpg')  # Make sure this is your file name and path
-
-# Set background image via pure CSS (no st.image())
-st.markdown(
-    """
-    <style>
-    [data-testid="stAppViewContainer"] {
-        background-size: cover;
-        background-position: top-center;
-        background-repeat: no-repeat;
-        background-attachment: flex;
-    }
-    [data-testid="stHeader"] {
-        background: rgba(0, 0, 0, 0);
-    }
-    [data-testid="stSidebar"] {
-        background: rgba(0, 0, 0, 0);
-    }
-    .stButton>button {
-        background-color: #4CAF50;
-        color: white;
-        font-size: 18px;
-        border-radius: 10px;
-        padding: 10px 24px;
-    }
-    .css-1d391kg {
-        background-color: rgba(255, 255, 255, 0.7);
-        border-radius: 10px;
-        padding: 20px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
 
 
 # Custom CSS for better appearance

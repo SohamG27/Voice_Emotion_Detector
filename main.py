@@ -1,4 +1,4 @@
-# ✅ Updated main.py with CREMA-D + RAVDESS + ComParE_2016 Features
+# ✅  main.py with CREMA-D + RAVDESS + ComParE_2016 Features
 
 import os
 import opensmile
@@ -15,8 +15,9 @@ from datetime import datetime
 CREMA_PATH = r"D:/Crema"
 RAVDESS_PATH = r"D:/vdir"
 TESS_PATH=r"D:/TESS"
+IEMOCAP_PATH=r"D:\IEMOCAP"
 SAVEE_PATH=r"D:/SAVEE"
-AUTO_DATA_CSV = "auto_collected.csv"
+'''AUTO_DATA_CSV = "auto_collected.csv"'''
 LOG_FILE = ".venv/logs/training_log.txt"
 
 # Ensure necessary folders exist
@@ -128,6 +129,41 @@ for root, dirs, files in os.walk(RAVDESS_PATH):
             except Exception as e:
                 print(f"⚠️ Error processing RAVDESS file {file}: {e}")
 
+# Load IEMOCAP Dataset
+print("🔁 Loading IEMOCAP samples...")
+
+iemocap_emotion_map = {
+    'ang': 'angry',
+    'hap': 'happy',
+    'sad': 'sad',
+    'neu': 'neutral',
+    'fea': 'fear',
+    'dis': 'disgust'
+}
+
+for root, dirs, files in os.walk(IEMOCAP_PATH):
+    for file in files:
+        if file.endswith(".wav"):
+            try:
+                for code, emotion in iemocap_emotion_map.items():
+                    if f"_{code}" in file.lower():
+                        path = os.path.join(root, file)
+
+                        # ⏱️ Skip short files (<2s)
+                        import soundfile as sf
+                        info = sf.info(path)
+                        if info.duration < 2.0:
+                            continue
+
+                        # 🎯 Extract features
+                        features = smile.process_file(path).values[0]
+                        X.append(features)
+                        y.append(emotion)
+                        break  # Stop after matching one emotion
+            except Exception as e:
+                print(f"⚠️ Error processing IEMOCAP file {file}: {e}")
+
+
 # Load auto_collected.csv if exists
 '''auto_count = 0
 if os.path.exists(AUTO_DATA_CSV):
@@ -141,8 +177,9 @@ if os.path.exists(AUTO_DATA_CSV):
     X = np.vstack([X, auto_X])
     y = np.concatenate([y, auto_y])
 
+'''
 X = np.array(X)
-y = np.array(y)'''
+y = np.array(y)
 
 # Encode labels
 le = LabelEncoder()
@@ -153,11 +190,11 @@ X_train, X_test, y_train, y_test = train_test_split(
     X, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded
 )
 
-# XGBoost expects float32
-X_train = X_train.astype(np.float32)
-X_test = X_test.astype(np.float32)
+# LightGBM expects float32
+X_train = np.array(X_train).astype(np.float32)
+X_test = np.array(X_test).astype(np.float32)
 
-# Train lightgbm
+# Train lightGBM
 clf = LGBMClassifier(
     n_estimators=300,
     learning_rate=0.03,
