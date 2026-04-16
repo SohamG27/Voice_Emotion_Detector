@@ -24,7 +24,7 @@ This model detects human emotions directly from raw `.wav` audio files with high
 
 ---
 
-## 🧠 Model Architecture
+## Model Architecture
 
 | Component          | Technology                     |
 | ------------------ | ------------------------------ |
@@ -176,7 +176,7 @@ Each run records:
 
 ---
 
-## 🔧 Customization
+##  Customization
 
 You can extend the system by:
 
